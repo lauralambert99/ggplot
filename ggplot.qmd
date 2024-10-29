@@ -1,0 +1,923 @@
+---
+title: "Data Visualization in R"
+author: Laura Lambert
+institute: James Madison University
+format: 
+  revealjs:
+    theme: default
+title-slide-attributes:
+      data-background-image: rsz_1rsz_lakeview_overview.jpg
+      data-background-opacity: "0.5"
+---
+
+```{r, setup}
+library(ggplot2)
+library(tidyverse)
+library(qualtRics)
+library(viridis)
+library(ggdist)
+```
+
+## Introductions
+
+::: incremental
+-   Doctoral candidate in James Madison University's Assessment & Measurement program
+-   Full-time A&P faculty in Integrated Science and Technology (also at JMU)
+-   Data visualization enthusiast
+-   Believer in access and inclusion
+:::
+
+## Outline {auto-animate="true" auto-animate-easing="ease-in-out"}
+
+![](context.svg){data-id="icon1" fig-align="center" auto-animate-delay="0" style="width: 250px; height: 250px; margin: 10px;"}
+
+::: {style="text-align: center;"}
+<p>Contextualize this in the Assessment Cycle</p>
+:::
+
+## Outline {auto-animate="true" auto-animate-easing="ease-in-out"}
+
+![](data.svg){data-id="icon2" fig-align="center" auto-animate-delay="0" style="width: 250px; height: 250px; margin: 10px;"}
+
+::: {style="text-align: center;"}
+<p>Data visualization best practices</p>
+:::
+
+::: r-hstack
+![](context.svg){data-id="icon1" auto-animate-delay="0" style="width: 75px; height: 75px; margin: 10px;"}
+:::
+
+## Outline {auto-animate="true" auto-animate-easing="ease-in-out"}
+
+![](structure.svg){data-id="icon3" fig-align="center" auto-animate-delay="0.2" style="width: 250px; height: 250px; margin: 10px;"}
+
+::: {style="text-align: center;"}
+<p>In-depth look at ggplot</p>
+:::
+
+::: r-hstack
+![](context.svg){data-id="icon1" auto-animate-delay="0" style="width: 75px; height: 75px; margin: 10px;"}
+
+![](data.svg){data-id="icon2" auto-animate-delay="0" style="width: 75px; height: 75px; margin: 10px;"}
+:::
+
+## Outline {auto-animate="true" auto-animate-easing="ease-in-out"}
+
+![](resources.svg){data-id="icon4" fig-align="center" auto-animate-delay="0.2" style="width: 250px; height: 250px; margin: 10px;"}
+
+::: {style="text-align: center;"}
+<p>Show some open-source resources</p>
+:::
+
+::: r-hstack
+![](context.svg){data-id="icon1" auto-animate-delay="0" style="width: 75px; height: 75px; margin: 10px;"}
+
+![](data.svg){data-id="icon2" auto-animate-delay="0" style="width: 75px; height: 75px; margin: 10px;"}
+
+![](structure.svg){data-id="icon3" auto-animate-delay="0" style="width: 75px; height: 75px; margin: 10px;"}
+:::
+
+## Outline {auto-animate="true" auto-animate-easing="ease-in-out"}
+
+![](questions.svg){data-id="icon5" fig-align="center" auto-animate-delay="0.2" style="width: 250px; height: 250px; margin: 10px;"}
+
+::: {style="text-align: center;"}
+<p>Time for questions</p>
+:::
+
+::: r-hstack
+![](context.svg){data-id="icon1" auto-animate-delay="0" style="width: 75px; height: 75px; margin: 10px;"}
+
+![](data.svg){data-id="icon2" auto-animate-delay="0" style="width: 75px; height: 75px; margin: 10px;"}
+
+![](structure.svg){data-id="icon3" auto-animate-delay="0" style="width: 75px; height: 75px; margin: 10px;"}
+
+![](resources.svg){data-id="icon4" auto-animate-delay="0" style="width: 75px; height: 75px; margin: 10px;"}
+:::
+
+## Outline {auto-animate="true" auto-animate-easing="ease-in-out"}
+
+::: {style="text-align: center;"}
+<p>Let's get started!</p>
+:::
+
+::: r-hstack
+![](context.svg){data-id="icon1" auto-animate-delay="0" style="width: 75px; height: 75px; margin: 10px;"}
+
+![](data.svg){data-id="icon2" auto-animate-delay="0" style="width: 75px; height: 75px; margin: 10px;"}
+
+![](structure.svg){data-id="icon3" auto-animate-delay="0" style="width: 75px; height: 75px; margin: 10px;"}
+
+![](resources.svg){data-id="icon4" auto-animate-delay="0" style="width: 75px; height: 75px; margin: 10px;"}
+
+![](questions.svg){data-id="icon5" auto-animate-delay="0" style="width: 75px; height: 75px; margin: 10px;"}
+:::
+
+## Context {auto-animate="true"}
+
+::: r-stack
+::: {.fragment .fade-in-then-semi-out}
+![](Asmt_cycle.svg)
+:::
+
+::: {.fragment .fade-in}
+::: {.fragment .grow}
+![](Asmt_cycle_zoom.svg)
+:::
+:::
+:::
+
+## What is "ggplot"?
+
+::: incremental
+-   Package in R for graphing data
+-   Utilizes the "grammar of graphics"
+    -   Breaks graphics down into components
+-   Builds charts through the stacking of layers
+    -   Not limited to pre-defined graphs
+-   Variables mapped to aesthetics
+-   Integrates with `tidyverse` environment
+:::
+
+## R Graph Gallery
+
+<https://r-graph-gallery.com/>
+
+## Data Visualization Best Practices
+
+::: incremental
+-   Be clear
+-   Who's story are we telling?
+-   Avoid clutter
+-   Avoid misleading or confusing elements
+-   Color considerations (accessibility, consistency)
+-   NO PIE CHARTS!
+:::
+
+## Ordered bars
+
+Having bars in a bar plot be ascending or descending aids in interpretation and comparison
+
+```{r}
+a <- sample(c("A", "B", "C", "D", "E"), size = 150, replace = TRUE, prob = c(0.2, 0.4, 0.1, 0.2, 0.1))
+a <- data.frame(a)
+ggplot(data = a) +
+  geom_bar(aes(x = a, fill = a)) + 
+  scale_fill_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Ordered bars
+
+Having bars in a bar plot be ascending or descending aids in interpretation and comparison
+
+```{r}
+library(forcats)
+a <- a |>
+  mutate(a = fct_infreq(a))
+
+ggplot(data = a) +
+  geom_bar(aes(x = a, fill = a)) + 
+  scale_fill_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Avoid spaghetti charts
+
+```{r}
+num_groups <- 9   
+num_points <- 20 
+
+df <- data.frame(
+  time = rep(1:num_points, num_groups),                     
+  value = rep(seq(10, 50, length.out = num_points), num_groups) + 
+          rnorm(num_points * num_groups, mean = 0, sd = 3), 
+  group = factor(rep(1:num_groups, each = num_points))     
+)
+
+ggplot(df, aes(x = time, y = value, color = group, group = group)) +
+  geom_line() +
+  scale_color_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Avoid spaghetti charts
+
+```{r}
+df |>
+  filter(group == 3) |>
+  ggplot(aes(x = time, y = value, group = group)) +
+  geom_line() +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Lollipop charts
+
+```{r}
+lolly <- sample(c("A", "B", "C", "D", "E"), size = 220, replace = TRUE, prob = c(0.2, 0.2, 0.2, 0.2, 0.2))
+lolly <- data.frame(lolly)
+
+lolly <- lolly |>
+  mutate(lolly = fct_infreq(lolly))
+
+ggplot(data = lolly) + 
+  geom_bar(aes(x = lolly, fill = lolly)) + 
+  coord_flip() + 
+  scale_fill_viridis(discrete = TRUE) + 
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+
+```
+
+## Lollipop charts
+
+```{r}
+count_data <- lolly |>
+  group_by(lolly) |>
+  summarise(count = n())
+
+
+ggplot(count_data, aes(x = lolly, y = count)) +
+  geom_segment(aes(x = lolly, xend = lolly, y = 0, yend = count), color = "grey50", size = 1) +
+  geom_point(aes(color = lolly), size = 4) +
+  scale_color_viridis(discrete = TRUE) +
+  coord_flip() +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+
+
+```
+
+## Bin Sizes
+
+```{r}
+h <- round(rnorm(n = 200, mean = 62, sd = 7.2), 0)
+hh <- data.frame(h)
+
+ggplot(data = hh) +
+  geom_histogram(aes(x = h), binwidth = 20) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+
+```
+
+## Bin Sizes
+
+```{r}
+
+ggplot(data = hh) +
+  geom_histogram(aes(x = h), binwidth = 1) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+
+```
+
+## Boxplot considerations
+
+```{r}
+d <- rnorm(9, mean = 10, sd = 3)
+d <- append(d, 21)
+g <- rep("G1", 10)
+d1 <- data.frame(d, g)
+
+ggplot(data = d1) + 
+  geom_boxplot(aes(x = d1$d))
+```
+
+## Boxplot considerations
+
+```{r}
+d <- rnorm(99, mean = 10, sd = 3)
+d <- append(d, 21)
+g <- rep("G2", 100)
+d2 <- data.frame(d, g)
+
+ggplot(data = d2) + 
+  geom_boxplot(aes(x = d2$d))
+```
+
+## Alternative
+
+```{r}
+c_data <- rbind(d1, d2)
+
+ggplot(data = c_data) +
+  geom_violin(aes(x = g, y = d, fill = g)) +
+  scale_fill_viridis(discrete = TRUE) + 
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Alternative
+
+```{r}
+ggplot(data = c_data, aes(x = g, y = d, fill = g)) +
+  stat_halfeye(
+    adjust = 0.5,
+    justification = -0.2,
+    .width = 0,
+    point_colour = NA
+  ) +
+  
+  stat_dots(
+    side = "left",
+    justification = 1.1,
+    binwidth = 0.25,
+    color = "black"
+  ) +
+  scale_fill_viridis(begin = 0.5, end = 0.8, discrete = TRUE) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Dual Axis
+
+Just....don't.
+
+![](dual_axis.png)
+
+::: notes
+Scales are arbitrary - can mislead readers about the relationship Zero baselines at different heights can also mislead Flat-out hard to read Also, not possible to do in ggplot Do side-by-side as an alternative
+:::
+
+## Axis Labels
+
+```{r}
+#| fig-cap: (example shamelessly lifted from https://www.data-to-viz.com/caveat/hard_label.html)
+data <- read.table("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/7_OneCatOneNum.csv", header=TRUE, sep=",")
+
+data |>
+  filter(!is.na(Value)) |>
+  arrange(Value) |>
+  tail(20) |>
+  mutate(Country=factor(Country, Country)) |>
+  ggplot( aes(x=Country, y=Value) ) +
+    geom_bar(stat="identity", fill="#69b3a2") +
+    theme(
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.x = element_blank(),
+      legend.position="none",
+      axis.text.x = element_text(angle = 80, hjust=1)
+    ) +
+    xlab("") +
+    ylab("Weapon quantity (SIPRI trend-indicator value)")
+```
+
+## Axis Labels
+
+```{r}
+data |>
+  filter(!is.na(Value)) |>
+  arrange(Value) |>
+  tail(20) |>
+  mutate(Country=factor(Country, Country)) |>
+  ggplot( aes(x=Country, y=Value) ) +
+    geom_bar(stat="identity", fill="#69b3a2") +
+    theme(
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.x = element_blank(),
+      legend.position="none",
+      axis.text.x = element_text(angle = 80, hjust=1)
+    ) +
+    xlab("") +
+    ylab("Weapon quantity (SIPRI trend-indicator value)") +
+  coord_flip()
+
+
+```
+
+## Color Considerations
+
+Color as a way to highlight particular data
+
+```{r}
+df <- df |>
+  mutate(color_group = ifelse(group == 2, "Highlight", "Other"))
+
+# Plot using the new color grouping column
+ggplot(df, aes(x = time, y = value, group = group, color = color_group)) +
+  geom_line() +
+  scale_color_manual(values = c("Highlight" = "purple", "Other" = "grey70")) +
+  labs(x = "Time", y = "Value", title = "Highlighted Line with Other Groups in Grey") +
+  theme_minimal() +
+  theme(panel.grid = element_blank()) +
+  theme(legend.position = "none")
+```
+
+## Color Considerations
+
+Contrast is important
+
+![](shades1.png)
+
+## Color Considerations
+
+Contrast is important - so is proximity
+
+![](shades2.png)
+
+## Color Considerations
+
+Rainbow may be pretty, but not accessible (more on this in a bit)
+
+```{r}
+ggplot(data = a) +
+  geom_bar(aes(x = a, fill = a)) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## NO PIE CHARTS!
+
+![](pie.png)
+
+## NO PIE CHARTS!
+
+![](pie2.png) :::{.notes} humans are pretty bad at telling angles. Can you see what, if any, of the groups are different here? :::
+
+## NO PIE CHARTS!
+
+![](bar1.png)
+
+::: notes
+What if we changed it to a box plot? How about now?
+:::
+
+## NO PIE CHARTS! {.center}
+
+![](bar2.png) :::{.notes} Can you tell differences now? This also brings us to our next point - honesty in visualizations :::
+
+## Creativity
+
+![](example1.jpg)
+
+## Honesty in Visualizations {.center}
+
+![](bad1.png)
+
+## Who's Story is Being Told? {.center}
+
+![](gend1.png)
+
+## Who's Story is Being Told? {.center}
+
+![](gend2.jpg)
+
+## Accessibility Considerations
+
+::: incremental
+-   Colorblindness is one consideration
+    -   Multiple types
+-   Accessibility to color printing another
+-   Visual contrast
+    -   Other visual considerations
+-   Multiple ways to represent groups (color and shape)
+:::
+
+::: notes
+'rainbow' colors is not colorblind friendly
+:::
+
+## Colorblind checkers
+
+-   <https://www.Color-blindness.com>
+-   <https://www.Venngage.com/tools/color-blind-simulator#simulator>
+
+## `viridis` Theme
+
+![](viridis.png) (https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html) \## `viridis` Theme
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+
+#Install the package
+install.packages("viridis")
+
+#Call the package
+library(viridis)
+```
+
+## `viridis` Theme - A comparison
+
+![](viridis2.png)
+
+## `viridis` Theme - A comparison
+
+Green-Blind (Deuteranopia) ![](viridis3.png)
+
+## `viridis` Theme - A comparison
+
+Red-Blind (Protanopia) ![](viridis4.png)
+
+## `viridis` Theme - A comparison
+
+Blue-Blind (Tritanopia) ![](viridis5.png)
+
+## `viridis` Theme - A comparison
+
+Desaturated ![](viridis6.png)
+
+## Let's Dive into `ggplot`
+
+## `ggplot` Structure
+
+-   Define data dataframe)
+-   Choose graph structure (geom)
+-   Specify variables to use (aesthetics)
+-   Provide context (titles and labels)
+-   Make it pretty (themes and colors)
+
+## A Basic Graph
+
+```{r}
+g <- read.csv("data1_KEY_v2.csv")
+```
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+ggplot(data = g) + 
+  geom_histogram(aes(hrs_sleep))
+```
+
+## A Basic Graph
+
+```{r}
+ggplot(data = g) + 
+  geom_histogram(aes(hrs_sleep))
+```
+
+## Axis Labels
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+ggplot(data = g) + 
+  geom_histogram(aes(hrs_sleep)) + 
+  labs(x = "Hours of Sleep")
+```
+
+## Axis Labels
+
+```{r}
+ggplot(data = g) + 
+  geom_histogram(aes(hrs_sleep)) + 
+  labs(x = "Hours of Sleep")
+```
+
+## Axis Labels
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+ggplot(data = g) + 
+  geom_histogram(aes(hrs_sleep)) + 
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses")
+```
+
+## Axis Labels
+
+```{r}
+ggplot(data = g) + 
+  geom_histogram(aes(hrs_sleep)) + 
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses")
+```
+
+## Adding a Title
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+ggplot(data = g) + 
+  geom_histogram(aes(hrs_sleep)) + 
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students")
+```
+
+## Adding a Title
+
+```{r}
+ggplot(data = g) + 
+  geom_histogram(aes(hrs_sleep)) + 
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students")
+```
+
+## Color by Group
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+ggplot(data = g) + 
+  geom_histogram(aes(x = hrs_sleep, group = gender, color = gender)) + 
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students")
+```
+
+## Color by Group
+
+```{r}
+ggplot(data = g) + 
+  geom_histogram(aes(x = hrs_sleep, group = gender, color = gender)) + 
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students")
+```
+
+## Color by Group
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+ggplot(data = g) + 
+  geom_histogram(aes(x = hrs_sleep, group = gender, fill = gender)) + 
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students")
+```
+
+## Color by Group
+
+```{r}
+ggplot(data = g) + 
+  geom_histogram(aes(x = hrs_sleep, group = gender, fill = gender)) + 
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students")
+```
+
+## Color by Group
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+ggplot(data = g) + 
+  geom_histogram(aes(x = hrs_sleep, group = gender, fill = gender)) + 
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students") +
+  scale_fill_viridis(discrete = TRUE)
+```
+
+## Color by Group
+
+```{r}
+ggplot(data = g) + 
+  geom_histogram(aes(x = hrs_sleep, group = gender, fill = gender)) + 
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students") +
+  scale_fill_viridis(discrete = TRUE)
+```
+
+## Color by Group
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+ggplot(data = g) + 
+  geom_histogram(aes(x = hrs_sleep, fill = gender)) +   
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students") +
+  facet_wrap(~ gender, ncol = 1) +                  
+  scale_fill_viridis(discrete = TRUE)                        
+```
+
+## Color by Group
+
+```{r}
+ggplot(data = g) + 
+  geom_histogram(aes(x = hrs_sleep, fill = gender)) +   
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students") +
+  facet_wrap(~ gender, ncol = 1) +                  
+  scale_fill_viridis(discrete = TRUE)                         
+```
+
+## Color by Group
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+custom_labels <- c("M" = "Males", "F" = "Females", "NB" = "Non-binary")
+
+ggplot(data = g) + 
+  geom_histogram(aes(x = hrs_sleep, fill = gender)) +   
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students") +
+  facet_wrap(~ gender, ncol = 1, labeller = as_labeller(custom_labels)) + 
+  scale_fill_viridis(discrete = TRUE) 
+```
+
+## Color by Group
+
+```{r}
+custom_labels <- c("M" = "Males", "F" = "Females", "NB" = "Non-binary")
+
+ggplot(data = g) + 
+  geom_histogram(aes(x = hrs_sleep, fill = gender)) +   
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students") +
+  facet_wrap(~ gender, ncol = 1, labeller = as_labeller(custom_labels)) + 
+  scale_fill_viridis(discrete = TRUE)                        
+```
+
+## Modifying the Theme
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+custom_labels <- c("M" = "Males", "F" = "Females", "NB" = "Non-binary")
+
+ggplot(data = g) + 
+  geom_histogram(aes(x = hrs_sleep, fill = gender)) +   
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students") +
+  facet_wrap(~ gender, ncol = 1, labeller = as_labeller(custom_labels)) + 
+  scale_fill_viridis(discrete = TRUE) +                           
+  theme_minimal()
+```
+
+## Modifying the Theme
+
+```{r}
+custom_labels <- c("M" = "Males", "F" = "Females", "NB" = "Non-binary")
+
+ggplot(data = g) + 
+  geom_histogram(aes(x = hrs_sleep, fill = gender)) +   
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students") +
+  facet_wrap(~ gender, ncol = 1, labeller = as_labeller(custom_labels)) + 
+  scale_fill_viridis(discrete = TRUE) +                           
+  theme_minimal()
+```
+
+## Removing Gridlines
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+custom_labels <- c("M" = "Males", "F" = "Females", "NB" = "Non-binary")
+
+ggplot(data = g) + 
+  geom_histogram(aes(x = hrs_sleep, fill = gender)) +   
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students") +
+  facet_wrap(~ gender, ncol = 1, labeller = as_labeller(custom_labels)) + 
+  scale_fill_viridis(discrete = TRUE) +                           
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Removing the Gridlines
+
+```{r}
+custom_labels <- c("M" = "Males", "F" = "Females", "NB" = "Non-binary")
+
+ggplot(data = g) + 
+  geom_histogram(aes(x = hrs_sleep, fill = gender)) +   
+  labs(x = "Hours of Sleep",
+       y = "Number of Responses",
+       title = "Average Hours of Sleep for College Students") +
+  facet_wrap(~ gender, ncol = 1, labeller = as_labeller(custom_labels)) + 
+  scale_fill_viridis(discrete = TRUE) +                           
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Going to a Different Graph
+
+```{r}
+num_groups <- 4  
+num_points <- 20 
+
+df_shape <- data.frame(
+  time = rep(1:num_points, num_groups),                     
+  value = rep(seq(10, 50, length.out = num_points), num_groups) + 
+          rnorm(num_points * num_groups, mean = 0, sd = 3), 
+  group = factor(rep(1:num_groups, each = num_points))     
+)
+```
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+
+ggplot(df_shape, aes(x = time, y = value, color = group, group = group)) +
+  geom_line() +
+  scale_color_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Going to a Different Graph
+
+```{r}
+ggplot(df_shape, aes(x = time, y = value, color = group, group = group)) +
+  geom_line() +
+  scale_color_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Multiple Layers
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+
+ggplot(df_shape, aes(x = time, y = value, color = group, group = group)) +
+  geom_line() +
+  geom_point(size = 3) +  
+  scale_color_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Multiple Layers
+
+```{r}
+ggplot(df_shape, aes(x = time, y = value, color = group, group = group)) +
+  geom_line() +
+  geom_point(size = 3) +  
+  scale_color_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Adding Shapes
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+
+ggplot(df_shape, aes(x = time, y = value, color = group, group = group)) +
+  geom_line() +
+  geom_point(aes(shape = group), size = 3) +  
+  scale_color_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Adding Shapes
+
+```{r}
+ggplot(df_shape, aes(x = time, y = value, color = group, group = group)) +
+  geom_line() +
+  geom_point(aes(shape = group), size = 3) +  
+  scale_color_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Line Types
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+
+ggplot(df_shape, aes(x = time, y = value, color = group, group = group, linetype = group)) +
+  geom_line() +
+  geom_point(aes(shape = group), size = 3) +  
+  scale_color_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Line Types
+
+```{r}
+ggplot(df_shape, aes(x = time, y = value, color = group, group = group, linetype = group)) +
+  geom_line() +
+  geom_point(aes(shape = group), size = 3) +  
+  scale_color_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+
+## Resources
+
+-   Google
+-   R-Graph gallery (<https://r-graph-gallery.com>)
+-   R Graphics Cookbook (<https://r-graphics.org/>)
+
+## Time for Questions
+
+Laura Lambert laycocla\@jmu.edu ![](questions.jpg)
